@@ -1,11 +1,16 @@
 <script setup>
   import { RouterLink, RouterView } from 'vue-router'
+  
 </script>
 
 <template>
   <header>
     <h1>Devices manager</h1>
   </header>
+  <nav>
+    <RouterLink to="/">Home</RouterLink>
+    <RouterLink to="about">About</RouterLink>
+  </nav>
   <RouterView />
 </template>
 
@@ -25,27 +30,35 @@ h1{
   margin-left: 10%;
   padding-top: 5px;
 }
+
+nav {
+  position: fixed;
+  left: 0;
+  top: 10vh; 
+  width: 10%;
+  height: 90vh; 
+  background-color: #333; 
+  color: white; 
+  z-index: 500; 
+}
+
+.content {
+  margin-left: 10%; 
+  margin-top: 10vh; 
+}
+
 .RouterView {
   margin-top: 10vh; 
 }
 
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-
 nav a {
-  display: inline-block;
-  padding: 0 1rem;
- /* border: 1px solid var(--color-border); */
+  display: block; 
+  padding: 10px; 
+  color: white; 
+  text-decoration: none; 
 }
 
-nav a:first-of-type {
-  border: 0;
+nav a:hover {
+  background-color: #555; 
 }
-
-
 </style>
