@@ -1,11 +1,11 @@
 <script setup>
 import { OhVueIcon, addIcons } from 'oh-vue-icons'
-import { BiMusicPlayer, FcGlobe, OiRepoPull, MdEditOutlined, RiDeleteBin5Line, MdFibernewTwotone } from 'oh-vue-icons/icons'
+import { BiMusicPlayer, FcFullTrash, FcGlobe, OiRepoPull, MdEditOutlined, RiDeleteBin5Line, MdFibernewTwotone } from 'oh-vue-icons/icons'
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
 //Add Icons
-addIcons(BiMusicPlayer, FcGlobe, OiRepoPull, MdEditOutlined, RiDeleteBin5Line, MdFibernewTwotone)
+addIcons(BiMusicPlayer, FcGlobe,FcFullTrash, OiRepoPull, MdEditOutlined, RiDeleteBin5Line, MdFibernewTwotone)
 
 const isModalOpen = ref(false);
 const editingMode = ref(false); 
@@ -24,6 +24,13 @@ const brand = ref('');
 const model = ref('');
 const registration_date = ref('');
 const status = ref('');
+
+const nameFilter = ref('');
+const typeFilter = ref('');
+const brandFilter = ref('');
+const modelFilter = ref('');
+const registrationDateFilter = ref('');
+const statusFilter = ref('');
 
 const truncateText = (text, length) => {
   if (text.length <= length) {
@@ -59,7 +66,6 @@ const handleSubmit = async () => {
   };
 
   try {
-    let response;
     if (editingMode.value) {
       response = await axios.put(`https://localhost:3000/device/${currentUuid.value}`, formData);
     } else {
@@ -84,9 +90,19 @@ const clearForm = () => {
 };
 
 const fetchData = async (page) => {
+
   try {
-    const response = await axios.get('https://localhost:3000/devices?limit=10&page='+page);
-    console.log(response.data)
+    const nameQuery = nameFilter.value?`&name=${nameFilter.value}`:''
+    const typeQuery = typeFilter.value?`&type=${typeFilter.value}`:''
+    const brandFQuery = brandFilter.value?`&brand=${brandFilter.value}`:''
+    const modelFQuery = modelFilter.value?`&model=${modelFilter.value}`:''
+    const registrationDateQuery = registrationDateFilter.value?`&registrationDate=${registrationDateFilter.value}`:''
+    const statusQuery = statusFilter.value?`&status=${statusFilter.value}`:''
+
+    const queryParams = statusQuery+nameQuery+typeQuery+brandFQuery+modelFQuery+registrationDateQuery
+
+    const response = await axios.get('https://localhost:3000/devices?limit=10&page='+page+'&'+queryParams);
+    
     responseData.value =response.data._data.devices
     responseDataPage.value=parseInt(response.data._page.page)
     responseDataLimit.value=parseInt(response.data._page.limit)
@@ -160,9 +176,52 @@ onMounted(() => {
             <option value="inactive">Inactive</option>
           </select>
         </div>
-        <button type="submit">Done </button>
+        <button type="submit" >Done </button>
       </form>
     </div>
+  </div>
+  <div id="filter-form" class = "filter-form">
+    <div class="filter-div">
+      <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" v-model="nameFilter" name="name">
+      </div>
+      
+      <div>
+        <label for="type">Type:</label>
+        <input type="text" id="type" v-model="typeFilter" name="type">
+      </div>
+      
+      <div>
+        <label for="brand">Brand:</label>
+        <input type="text" id="brand" v-model="brandFilter" name="brand">
+      </div>
+      
+      <div>
+        <label for="model">Model:</label>
+        <input type="text" id="model" v-model="modelFilter" name="model">
+      </div>
+      
+      <div>
+        <label for="registration_date">Registration Date:</label>
+        <input type="date" id="registration_date" v-model="registrationDateFilter" name="registration_date">
+      </div>
+      
+      <div>
+        <label for="status">Status</label>
+        <select id="status" v-model="statusFilter">
+            <option value="">Select Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+      </div>
+      <div >
+        <button class="device-button" @click="fetchData(1)">
+          Filter
+        </button>
+      </div>
+    </div>
+    
   </div>
   <table>
     <thead>
@@ -188,18 +247,25 @@ onMounted(() => {
         <td>{{ truncateText(device.status, 8) }}</td>
         <td>
           <v-icon name="md-edit-outlined" @click="toggleModal(true, device.uuid, device)" />
-          <v-icon name="ri-delete-bin-5-line" @click="deleteDevice(device.uuid)" />
+          <v-icon name="fc-full-trash" @click="deleteDevice(device.uuid)" />
         </td>
       </tr>
       <tr>
         <td colspan="8">
           <div class="data-base-navigator">
-            <button class="device-button" @click="toggleModal(false, '', null)">Add</button>
-            <button class="device-button" @click="fetchData(responseDataPage>1?responseDataPage-1:responseDataPage)">
-              < Previous
-            </button>
-              Page: {{responseDataPage}}
-            <button class="device-button" @click="fetchData(responseDataLimit/responseDataTotalElements>responseDataPage-1?responseDataPage+1:responseDataPage)"> Next ></button>
+            <H2>
+              <button class="device-button" @click="toggleModal(false, '', null)">
+                Add
+              </button>
+              <button class="device-button" @click="fetchData(responseDataPage>1?responseDataPage-1:responseDataPage)">
+                < Previous
+              </button>
+                Page: {{responseDataPage}}
+              <button class="device-button" 
+                @click="fetchData(responseDataLimit/responseDataTotalElements>responseDataPage-1 && responseDataTotalElements>responseDataLimit ?responseDataPage+1:responseDataPage)"> 
+                Next >
+              </button>
+            </H2>
           </div>
         </td>
       </tr>
@@ -209,29 +275,44 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
+  .filter-form{
+    display: flex; 
+    flex-wrap: wrap; 
+    align-items: center; 
+    justify-content: space-between;
+  }
+  .filter-div{
+    display: flex; 
+    flex-wrap: wrap; 
+    align-items: center; 
+    gap: 20px; 
+    flex-grow: 1;
+  }
   .data-base-navigator{
     width: 100%;
     padding: 0%;
   }
   .device-button {
-    background-color: #4CAF50; 
+    background-color: #5e85b0; 
     border: none;
     color: white;
-    padding: 8px 16px;
+    padding: 7px 14px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
+    font-size: 12px;
     margin: 1px 0.5px;
     cursor: pointer;
     border-radius: 8px;
   }
 
+  .device-button:hover {
+    background-color: #3553ca;
+  }
+
   table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10%;
   }
 
   th, td {
@@ -246,14 +327,14 @@ onMounted(() => {
     color: #000; 
     font-weight: bold; 
   }
-    th.uuid, td.uuid { width: 250px; }
-    th.name, td.name { width: 150px; }
-    th.type, td.type { width: 100px; }
-    th.brand, td.brand { width: 100px; }
-    th.model, td.model { width: 100px; }
-    th.registration_date, td.registration_date { width: 180px; }
-    th.status, td.status { width: 100px; }
-    th.actions, td.actions { width: 70px; }
+  th.uuid, td.uuid { width: 350px; }
+  th.name, td.name { width: 250px; }
+  th.type, td.type { width: 200px; }
+  th.brand, td.brand { width: 200px; }
+  th.model, td.model { width: 200px; }
+  th.registration_date, td.registration_date { width: 180px; }
+  th.status, td.status { width: 100px; }
+  th.actions, td.actions { width: 70px; }
 
   .modal {
   position: fixed; 
@@ -313,7 +394,7 @@ onMounted(() => {
 
   button[type="submit"] {
     width: 100%;
-    background-color: #4CAF50; 
+    background-color: #5e85b0; 
     color: white;
     padding: 10px 20px;
     margin: 8px 0;
@@ -324,7 +405,7 @@ onMounted(() => {
   }
 
   button[type="submit"]:hover {
-    background-color: #45a049;
+    background-color: #3553ca;
   }
 
   .close {

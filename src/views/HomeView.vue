@@ -4,6 +4,11 @@
 
 <template>
   <main>
+    
     <DataGrid />
   </main>
 </template>
+
+<style scoped>
+
+</style>
