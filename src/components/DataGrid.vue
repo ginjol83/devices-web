@@ -42,22 +42,6 @@ const truncateText = (text, length) => {
   return text.substring(0, length) + '...';
 };
 
-/*const deleteDevice = async (uuid) => {
-  const isConfirmed = confirm(`¿Estás seguro de querer eliminar el dispositivo con UUID: ${uuid}?`);
-
-  if (isConfirmed) {
-    try {
-      await axios.delete(`https://localhost:3000/device/${uuid}`);
-      console.log(`Dispositivo con UUID: ${uuid} ha sido eliminado.`);
-      fetchData(responseDataPage.value);
-    } catch (error) {
-      console.error('Error al eliminar el dispositivo:', error); 
-    }
-  } else {
-    console.log('Eliminación cancelada por el usuario.');
-  }
-};*/
-
 const handleSubmit = async () => {
   const formData = {
     name: name.value,
@@ -139,8 +123,6 @@ const prepareFormForEdit = (uuid, device) => {
 
 onMounted(() => {
   deviceStore.fetchDevices(1);
-  
-  //fetchData(1);
 });
 
 </script>
