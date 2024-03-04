@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { OhVueIcon, addIcons } from 'oh-vue-icons';
 import { IoPersonCircle } from 'oh-vue-icons/icons';
 import { useUserStore } from '../states/userStore.js'; // Asegúrate de que la ruta al store sea la correcta

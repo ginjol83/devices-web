@@ -1,5 +1,7 @@
 <script setup>
   import { OhVueIcon, addIcons } from 'oh-vue-icons'
+  import { RouterLink } from 'vue-router';
+
   import { FaDesktop, CoAboutMe, FaUserCircle, RiLogoutCircleLine   } from 'oh-vue-icons/icons'
   import LoginModal from './components/LoginModal.vue';
   import { useUserStore } from './states/userStore'; // Asegúrate de que la ruta al store sea la correcta
@@ -26,7 +28,7 @@
     </header>
     <nav>
       <RouterLink to="/"><h3><v-icon name="fa-desktop" /> Devices</h3></RouterLink>
-      <RouterLink to="about"><h3><v-icon name="co-about-me" /> About</h3></RouterLink>
+      <RouterLink to="/about"><h3><v-icon name="co-about-me" /> About</h3></RouterLink>
     </nav>
     <RouterView />
   </div>

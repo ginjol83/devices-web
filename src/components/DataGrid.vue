@@ -3,8 +3,9 @@ import { OhVueIcon, addIcons } from 'oh-vue-icons'
 import { BiMusicPlayer, FaRegularTrashAlt , FcGlobe, OiRepoPull, FaRegularEdit, RiDeleteBin5Line, MdFibernewTwotone } from 'oh-vue-icons/icons'
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-// import { deviceStore } from '../states/deviceStore'; // Asegúrate de que la ruta al store sea la correcta
+import { useDeviceStore } from '../states/deviceStore.js'; // Asegúrate de que la ruta al store sea la correcta
 
+const deviceStore = useDeviceStore();
 
 //Add Icons
 addIcons(BiMusicPlayer, FcGlobe,FaRegularTrashAlt , OiRepoPull, FaRegularEdit, RiDeleteBin5Line, MdFibernewTwotone)
@@ -41,7 +42,7 @@ const truncateText = (text, length) => {
   return text.substring(0, length) + '...';
 };
 
-const deleteDevice = async (uuid) => {
+/*const deleteDevice = async (uuid) => {
   const isConfirmed = confirm(`¿Estás seguro de querer eliminar el dispositivo con UUID: ${uuid}?`);
 
   if (isConfirmed) {
@@ -55,7 +56,7 @@ const deleteDevice = async (uuid) => {
   } else {
     console.log('Eliminación cancelada por el usuario.');
   }
-};
+};*/
 
 const handleSubmit = async () => {
   const formData = {
@@ -90,7 +91,7 @@ const clearForm = () => {
   registration_date.value = '';
   status.value = '';
 };
-
+/*
 const fetchData = async (page) => {
 
   try {
@@ -112,7 +113,7 @@ const fetchData = async (page) => {
   } catch (error) {
     console.error('Error al obtener los datos:', error);
   }
-};
+};*/
 
 const toggleModal = (isEditing = false, uuid = '', device = null) => {
   isModalOpen.value = !isModalOpen.value;
@@ -137,9 +138,9 @@ const prepareFormForEdit = (uuid, device) => {
 };
 
 onMounted(() => {
-  //deviceStore.fetchDevices();
+  deviceStore.fetchDevices(1);
   
-  fetchData(1);
+  //fetchData(1);
 });
 
 </script>
@@ -220,7 +221,7 @@ onMounted(() => {
           </select>
       </div>
       <div >
-        <button class="device-button" @click="fetchData(1)">
+        <button class="device-button" @click="deviceStore.fetchDevices(1)">
           Filter
         </button>
         <button class="device-button" @click="toggleModal(false, '', null)">
@@ -244,7 +245,7 @@ onMounted(() => {
       </tr>
     </thead>
     <tbody>
-      <tr v-for="device in responseData" :key="device.uuid">
+      <tr v-for="device in deviceStore.devices" :key="device.uuid">
         <td>{{ truncateText(device.uuid, 50) }}</td>
         <td>{{ truncateText(device.name, 15) }}</td>
         <td>{{ truncateText(device.type, 12) }}</td>
@@ -254,18 +255,18 @@ onMounted(() => {
         <td>{{ truncateText(device.status, 8) }}</td>
         <td>
           <v-icon name="fa-regular-edit" @click="toggleModal(true, device.uuid, device)" />
-          <v-icon name="fa-regular-trash-alt" @click="deleteDevice(device.uuid)" />
+          <v-icon name="fa-regular-trash-alt" @click="deviceStore.deleteDevice(device.uuid)" />
         </td>
       </tr>
     </tbody>
   </table>
   <div class="data-base-navigator">
-    <button class="device-button" @click="fetchData(responseDataPage>1?responseDataPage-1:responseDataPage)">
+    <button class="device-button" @click="deviceStore.fetchDevices(deviceStore.currentPage>1?deviceStore.currentPage-1:deviceStore.currentPage)">
       < Prev
     </button>
-    <span class="pagination-text">  Page:  {{responseDataPage}}  </span> 
+    <span class="pagination-text">  Page:  {{deviceStore.currentPage}}  </span> 
     <button class="device-button" 
-      @click="fetchData(responseDataLimit/responseDataTotalElements>responseDataPage-1 && responseDataTotalElements>responseDataLimit ?responseDataPage+1:responseDataPage)"> 
+      @click="deviceStore.fetchDevices(deviceStore.limit/deviceStore.totalElements>deviceStore.currentPage-1 && deviceStore.totalElements>deviceStore.limit ?deviceStore.currentPage+1:deviceStore.currentPage)"> 
       Next >
     </button>
   </div>
