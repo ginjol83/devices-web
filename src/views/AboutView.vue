@@ -1,5 +1,4 @@
 <script setup>
-// Aquí puedes importar cualquier dependencia necesaria o definir datos reactivos/composables si es necesario.
 </script>
 
 <template>
@@ -11,7 +10,6 @@
     <section class="content">
       <h2>Developed by</h2>
       <p>Andrés Giménez</p>
-
       <h2>Contact us</h2>
       <p>click to <a href="mailto:andres.gimenez@solarisdevelopments.com">send mail</a>.</p>
     </section>

@@ -1,33 +1,33 @@
 <script setup>
-  import { OhVueIcon, addIcons } from 'oh-vue-icons'
-  import { BiPersonFill, FcManager  } from 'oh-vue-icons/icons'
-  import { ref } from 'vue';
-  import axios from 'axios';
+import { OhVueIcon, addIcons } from 'oh-vue-icons'
+import { BiPersonFill, FcManager  } from 'oh-vue-icons/icons'
+import { ref } from 'vue';
+import axios from 'axios';
+import { useUserStore } from '../states/userStore.js';
 
-  addIcons( FcManager,BiPersonFill    )
+addIcons(FcManager, BiPersonFill);
 
-  const show = ref(true);
-  const username = ref('');
-  const password = ref('');
-  const loginError = ref(false); 
-  
-  const login = async () =>{
-    // Implementa la lógica de login aquí
-     try {
-      const response = await axios.get('https://localhost:3000/users?username='+username.value+'&password='+password.value+'&');
-      if(response.data._data.users.length>0){
-        show.value = false;
-      }else { //aqui logica si error
-        loginError.value = true; // Mostrar mensaje de error si las credenciales son incorrectas
-      }
-    } catch (error) {
-      console.error('Error al obtener los datos:', error);
+const userStore = useUserStore(); // Usar store de Pinia
+const show = ref(true);
+const username = ref('');
+const password = ref('');
+const loginError = ref(false); 
+
+const login = async () => {  
+  try {
+    const response = await axios.get(`https://localhost:3000/users?username=${username.value}&password=${password.value}`);
+    if (response.data._data.users.length > 0) {
+      show.value = false;
+      userStore.setUser(response.data._data.users[0]); // Usando una acción de Pinia
+      userStore.setLogged(true); 
+    } else { 
+      loginError.value = true; 
     }
-    // Oculta el modal tras un login exitoso
-    
+  } catch (error) {
+    console.error('Error al obtener los datos:', error);
   }
-
-  </script>
+}
+</script>
 
 <template>
     <div class="modal-backdrop" v-if="show">
@@ -94,7 +94,7 @@
   .login-button {
     width: 100%;
     padding: 10px;
-    background-color: #007bff;
+    background-color: #26a69a;
     border: none;
     border-radius: 5px;
     color: white;
@@ -103,7 +103,7 @@
   }
   
   .login-button:hover {
-    background-color: #0056b3;
+    background-color: #009688;
   }
   
   .login-form {

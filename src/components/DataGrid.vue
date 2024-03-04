@@ -1,17 +1,19 @@
 <script setup>
 import { OhVueIcon, addIcons } from 'oh-vue-icons'
-import { BiMusicPlayer, FcFullTrash, FcGlobe, OiRepoPull, MdEditOutlined, RiDeleteBin5Line, MdFibernewTwotone } from 'oh-vue-icons/icons'
+import { BiMusicPlayer, FaRegularTrashAlt , FcGlobe, OiRepoPull, FaRegularEdit, RiDeleteBin5Line, MdFibernewTwotone } from 'oh-vue-icons/icons'
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+// import { deviceStore } from '../states/deviceStore'; // Asegúrate de que la ruta al store sea la correcta
+
 
 //Add Icons
-addIcons(BiMusicPlayer, FcGlobe,FcFullTrash, OiRepoPull, MdEditOutlined, RiDeleteBin5Line, MdFibernewTwotone)
+addIcons(BiMusicPlayer, FcGlobe,FaRegularTrashAlt , OiRepoPull, FaRegularEdit, RiDeleteBin5Line, MdFibernewTwotone)
 
 const isModalOpen = ref(false);
 const editingMode = ref(false); 
 const currentUuid = ref(''); 
 
-const modalType = ref(''); 
+const modalType = ref('');  
 
 const responseData = ref(null);
 const responseDataPage = ref(null);
@@ -48,7 +50,7 @@ const deleteDevice = async (uuid) => {
       console.log(`Dispositivo con UUID: ${uuid} ha sido eliminado.`);
       fetchData(responseDataPage.value);
     } catch (error) {
-      console.error('Error al eliminar el dispositivo:', error);
+      console.error('Error al eliminar el dispositivo:', error); 
     }
   } else {
     console.log('Eliminación cancelada por el usuario.');
@@ -135,6 +137,8 @@ const prepareFormForEdit = (uuid, device) => {
 };
 
 onMounted(() => {
+  //deviceStore.fetchDevices();
+  
   fetchData(1);
 });
 
@@ -219,6 +223,9 @@ onMounted(() => {
         <button class="device-button" @click="fetchData(1)">
           Filter
         </button>
+        <button class="device-button" @click="toggleModal(false, '', null)">
+                Add
+              </button>
       </div>
     </div>
     
@@ -231,7 +238,7 @@ onMounted(() => {
         <th class="type">Type</th>
         <th class="brand">Brand</th>
         <th class="model">Model</th>
-        <th class="registration_date">Registration_date</th>
+        <th class="registration_date">Registration Date</th>
         <th class="status">Status</th>
         <th class="actions">Actions</th>        
       </tr>
@@ -246,35 +253,38 @@ onMounted(() => {
         <td>{{ truncateText(device.registration_date, 12) }}</td>
         <td>{{ truncateText(device.status, 8) }}</td>
         <td>
-          <v-icon name="md-edit-outlined" @click="toggleModal(true, device.uuid, device)" />
-          <v-icon name="fc-full-trash" @click="deleteDevice(device.uuid)" />
-        </td>
-      </tr>
-      <tr>
-        <td colspan="8">
-          <div class="data-base-navigator">
-            <H2>
-              <button class="device-button" @click="toggleModal(false, '', null)">
-                Add
-              </button>
-              <button class="device-button" @click="fetchData(responseDataPage>1?responseDataPage-1:responseDataPage)">
-                < Previous
-              </button>
-                Page: {{responseDataPage}}
-              <button class="device-button" 
-                @click="fetchData(responseDataLimit/responseDataTotalElements>responseDataPage-1 && responseDataTotalElements>responseDataLimit ?responseDataPage+1:responseDataPage)"> 
-                Next >
-              </button>
-            </H2>
-          </div>
+          <v-icon name="fa-regular-edit" @click="toggleModal(true, device.uuid, device)" />
+          <v-icon name="fa-regular-trash-alt" @click="deleteDevice(device.uuid)" />
         </td>
       </tr>
     </tbody>
   </table>
-  
+  <div class="data-base-navigator">
+    <button class="device-button" @click="fetchData(responseDataPage>1?responseDataPage-1:responseDataPage)">
+      < Prev
+    </button>
+    <span class="pagination-text">  Page:  {{responseDataPage}}  </span> 
+    <button class="device-button" 
+      @click="fetchData(responseDataLimit/responseDataTotalElements>responseDataPage-1 && responseDataTotalElements>responseDataLimit ?responseDataPage+1:responseDataPage)"> 
+      Next >
+    </button>
+  </div>
 </template>
 
 <style scoped>
+
+  .pagination-text{
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+
+  .data-base-navigator {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+    margin-top: 10px;
+  }
+
   .filter-form{
     display: flex; 
     flex-wrap: wrap; 
@@ -293,7 +303,7 @@ onMounted(() => {
     padding: 0%;
   }
   .device-button {
-    background-color: #5e85b0; 
+    background-color: #26a69a; 
     border: none;
     color: white;
     padding: 7px 14px;
@@ -307,24 +317,35 @@ onMounted(() => {
   }
 
   .device-button:hover {
-    background-color: #3553ca;
+    background-color: #009688;
   }
 
   table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid black;
   }
 
   th, td {
     padding: 8px;
     text-align: left;
     border: 1px solid black;
-    font-size:80%
+    font-size:80%;
+    border-left: none;
+   border-right: none;
   }
 
+  table tr:nth-child(odd) {
+  background-color: #f2f2f2; /* Color para las filas impares */
+}
+
+table tr:nth-child(even) {
+  background-color: #ffffff; /* Color para las filas pares */
+}
   th {
-    background-color: #f2f2f2; 
-    color: #000; 
+    background-color: #26a69a; 
+    color: white; 
     font-weight: bold; 
   }
   th.uuid, td.uuid { width: 350px; }
@@ -394,7 +415,7 @@ onMounted(() => {
 
   button[type="submit"] {
     width: 100%;
-    background-color: #5e85b0; 
+    background-color: #26a69a; 
     color: white;
     padding: 10px 20px;
     margin: 8px 0;
@@ -405,7 +426,7 @@ onMounted(() => {
   }
 
   button[type="submit"]:hover {
-    background-color: #3553ca;
+    background-color: #009688;
   }
 
   .close {

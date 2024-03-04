@@ -1,17 +1,29 @@
 <script setup>
+import { ref, computed } from 'vue';
+import { OhVueIcon, addIcons } from 'oh-vue-icons';
+import { IoPersonCircle } from 'oh-vue-icons/icons';
+import { useUserStore } from '../states/userStore.js'; // Asegúrate de que la ruta al store sea la correcta
 
-    import { ref } from 'vue';
-    import { OhVueIcon, addIcons } from 'oh-vue-icons'
-    import { IoPersonCircle  } from 'oh-vue-icons/icons'
+// Añadir iconos
+addIcons(IoPersonCircle);
 
-    //Add Icons
-    addIcons( IoPersonCircle   )
+const userStore = useUserStore();
 
-    const userName = ref('');
-    const userEmail = ref('');
-    const userRole = ref('');
-    const userBio = ref('');
-   
+// Acceder al estado a través de un getter
+const user = computed(() => userStore.getUser);
+
+const userName = ref('');
+const userEmail = ref('');
+const userRole = ref('');
+const userBio = ref('');
+
+// Observar cambios en el objeto de usuario
+watch(user, (newUser) => {
+  userName.value = newUser.username;
+  userEmail.value = newUser.email;
+  userRole.value = newUser.role;
+  userBio.value = newUser.bio;
+}, { immediate: true });
 </script>
 
 <template>
@@ -87,7 +99,7 @@ textarea {
 }
 
 .submit-btn {
-    background-color: #5e85b0; 
+    background-color: #26a69a; 
     border: none;
     color: white;
     padding: 7px 14px;
@@ -103,7 +115,7 @@ textarea {
 
 
 .submit-btn:hover {
-  background-color: #0056b3;
+  background-color: #009688;
 }
 </style>
   
