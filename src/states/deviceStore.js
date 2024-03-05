@@ -9,10 +9,43 @@ export const useDeviceStore = defineStore('deviceStore', {
     totalElements: 0,
   }),
   actions: {
-    async fetchDevices(page) {
-        console.log(page)
+    async addDevices(formData,page) {
       try {
+        await axios.post('https://localhost:3000/device', formData);
         const response = await axios.get(`https://localhost:3000/devices?limit=10&page=${page}`);
+        this.devices = response.data._data.devices;
+        this.currentPage = parseInt(response.data._page.page);
+        this.limit = parseInt(response.data._page.limit);
+        this.totalElements = response.data._page.totalElements;
+      } catch (error) {
+        console.error('Error al crear dispositivo:', error);
+      }
+    },
+    async modifyDevices(uuid, formData,page) {
+      try {
+        await axios.put(`https://localhost:3000/device/${uuid}`, formData)
+        const response = await axios.get(`https://localhost:3000/devices?limit=10&page=${page}`);
+        this.devices = response.data._data.devices;
+        this.currentPage = parseInt(response.data._page.page);
+        this.limit = parseInt(response.data._page.limit);
+        this.totalElements = response.data._page.totalElements;
+      } catch (error) {
+        console.error('Error al modificar los dispositivos:', error);
+      }
+    },
+    
+    async fetchDevices(page,nameFilter, typeFilter, brandFilter, modelFilter, registrationDateFilter,statusFilter) {
+      const nameQuery = nameFilter?`&name=${nameFilter}`:''
+      const typeQuery = typeFilter?`&type=${typeFilter}`:''
+      const brandFQuery = brandFilter?`&brand=${brandFilter}`:''
+      const modelFQuery = modelFilter?`&model=${modelFilter}`:''
+      const registrationDateQuery = registrationDateFilter?`&registrationDate=${registrationDateFilter}`:''
+      const statusQuery = statusFilter?`&status=${statusFilter}`:''
+      const filterParams = statusQuery+nameQuery+typeQuery+brandFQuery+modelFQuery+registrationDateQuery
+
+      try {
+        const response = await axios.get(`https://localhost:3000/devices?limit=10&page=${page}${filterParams}`)
+           
         this.devices = response.data._data.devices;
         this.currentPage = parseInt(response.data._page.page);
         this.limit = parseInt(response.data._page.limit);
@@ -28,9 +61,7 @@ export const useDeviceStore = defineStore('deviceStore', {
         try {
           await axios.delete(`https://localhost:3000/device/${uuid}`);
           console.log(`Dispositivo con UUID: ${uuid} ha sido eliminado.`);
-          console.log("vamos a refrescaaaaaar")
           this.fetchDevices(this.currentPage);
-          console.log("vamos a refrescao")
         } catch (error) {
           console.error('Error al eliminar el dispositivo:', error);
         }

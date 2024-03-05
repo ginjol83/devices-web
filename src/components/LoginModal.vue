@@ -4,10 +4,11 @@ import { BiPersonFill, FcManager  } from 'oh-vue-icons/icons'
 import { ref } from 'vue';
 import axios from 'axios';
 import { useUserStore } from '../states/userStore.js';
+import Cookies from 'js-cookie';
 
 addIcons(FcManager, BiPersonFill);
 
-const userStore = useUserStore(); // Usar store de Pinia
+const userStore = useUserStore(); 
 const show = ref(true);
 const username = ref('');
 const password = ref('');
@@ -18,8 +19,9 @@ const login = async () => {
     const response = await axios.get(`https://localhost:3000/users?username=${username.value}&password=${password.value}`);
     if (response.data._data.users.length > 0) {
       show.value = false;
-      userStore.setUser(response.data._data.users[0]); // Usando una acción de Pinia
-      userStore.setLogged(true); 
+      userStore.setUser(response.data._data.users[0]); 
+      Cookies.set('useruuid', response.data._data.users[0].uuid, { expires: 365 });
+      window.location.reload();
     } else { 
       loginError.value = true; 
     }

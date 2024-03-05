@@ -5,25 +5,47 @@
   import { FaDesktop, CoAboutMe, FaUserCircle, RiLogoutCircleLine   } from 'oh-vue-icons/icons'
   import LoginModal from './components/LoginModal.vue';
   import { useUserStore } from './states/userStore'; // Asegúrate de que la ruta al store sea la correcta
-  import { ref, computed } from 'vue';
+  import { ref, computed, onMounted } from 'vue';
+  import Cookies from 'js-cookie';
 
+  const show = ref(true);
   // Add Icons
   addIcons(FaDesktop, CoAboutMe, FaUserCircle, RiLogoutCircleLine);
-
   const userStore = useUserStore();  
   const user = computed(() => userStore.getUser);
-  const logged = computed(() => userStore.isLogged);
+  
+  const logout = () => {
+    if (confirm("Are you sure you want to log out?")) {
+      Cookies.remove('useruuid')
+      show.value = true;
+      window.location.reload();
+    }
+  }
+  onMounted(() => {
+  
+    const userUuid = Cookies.get('useruuid');
+  
+  if (userUuid) {
+    userStore.fetchUserByUuid(userUuid)
+    show.value = false;
+  } else {
+    show.value = true;
+  }
+});
+
+
 </script>
 
 <template>
-  <!--login-modal / -->
-  <div>
+  <login-modal v-if="show" />
+  <div v-if="!show">
     <header>
       <h1 style="margin: 0; color: white;">Devices Manager</h1>
       <div>
         <span style="margin: 0; color: white;"> User: {{ user.username }} </span>
         <RouterLink to="user-profile"><v-icon name="fa-user-circle" scale="2.6" style="color: #FFFFFF;"/></RouterLink>
-        <button><v-icon name="ri-logout-circle-line" scale="2.4" style="color: #FFFFFF;" /></button>
+        <button><v-icon name="ri-logout-circle-line" scale="2.4" style="color: #FFFFFF;" 
+          @click="logout()" /></button>
       </div>
     </header>
     <nav>

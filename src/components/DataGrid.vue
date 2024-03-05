@@ -1,6 +1,6 @@
 <script setup>
 import { OhVueIcon, addIcons } from 'oh-vue-icons'
-import { BiMusicPlayer, FaRegularTrashAlt , FcGlobe, OiRepoPull, FaRegularEdit, RiDeleteBin5Line, MdFibernewTwotone } from 'oh-vue-icons/icons'
+import { BiMusicPlayer,PrFilterSlash ,RiAddLine,FaCaretDown, PrFilter, IoAddOutline,  FaRegularTrashAlt , FcGlobe, OiRepoPull, FaRegularEdit, RiDeleteBin5Line, MdFibernewTwotone } from 'oh-vue-icons/icons'
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useDeviceStore } from '../states/deviceStore.js'; // Asegúrate de que la ruta al store sea la correcta
@@ -8,18 +8,27 @@ import { useDeviceStore } from '../states/deviceStore.js'; // Asegúrate de que 
 const deviceStore = useDeviceStore();
 
 //Add Icons
-addIcons(BiMusicPlayer, FcGlobe,FaRegularTrashAlt , OiRepoPull, FaRegularEdit, RiDeleteBin5Line, MdFibernewTwotone)
+addIcons( 
+  BiMusicPlayer,
+  RiAddLine,
+  FaCaretDown,
+  PrFilterSlash,
+  PrFilter,
+  IoAddOutline,
+  FcGlobe,
+  FaRegularTrashAlt,
+  OiRepoPull, 
+  FaRegularEdit, 
+  RiDeleteBin5Line, 
+  MdFibernewTwotone
+  )
+
+
 
 const isModalOpen = ref(false);
 const editingMode = ref(false); 
 const currentUuid = ref(''); 
-
 const modalType = ref('');  
-
-const responseData = ref(null);
-const responseDataPage = ref(null);
-const responseDataLimit = ref(null);
-const responseDataTotalElements = ref(null);
 
 const name = ref('');
 const type = ref('');
@@ -34,6 +43,7 @@ const brandFilter = ref('');
 const modelFilter = ref('');
 const registrationDateFilter = ref('');
 const statusFilter = ref('');
+
 
 const truncateText = (text, length) => {
   if (text.length <= length) {
@@ -54,9 +64,9 @@ const handleSubmit = async () => {
 
   try {
     if (editingMode.value) {
-      response = await axios.put(`https://localhost:3000/device/${currentUuid.value}`, formData);
+      deviceStore.modifyDevices(currentUuid.value,formData,deviceStore.currentPage)
     } else {
-      response = await axios.post('https://localhost:3000/device', formData);
+      deviceStore.addDevices(formData,deviceStore.currentPage)
     }
 
     toggleModal();
@@ -67,6 +77,15 @@ const handleSubmit = async () => {
   clearForm();
 };
 
+const cleanFilters = () => {
+  nameFilter.value = '';
+  typeFilter.value = '';
+  brandFilter.value = '';
+  modelFilter.value = '';
+  registrationDateFilter.value = '';
+  statusFilter.value = '';
+}
+
 const clearForm = () => {
   name.value = '';
   type.value = '';
@@ -75,29 +94,6 @@ const clearForm = () => {
   registration_date.value = '';
   status.value = '';
 };
-/*
-const fetchData = async (page) => {
-
-  try {
-    const nameQuery = nameFilter.value?`&name=${nameFilter.value}`:''
-    const typeQuery = typeFilter.value?`&type=${typeFilter.value}`:''
-    const brandFQuery = brandFilter.value?`&brand=${brandFilter.value}`:''
-    const modelFQuery = modelFilter.value?`&model=${modelFilter.value}`:''
-    const registrationDateQuery = registrationDateFilter.value?`&registrationDate=${registrationDateFilter.value}`:''
-    const statusQuery = statusFilter.value?`&status=${statusFilter.value}`:''
-
-    const queryParams = statusQuery+nameQuery+typeQuery+brandFQuery+modelFQuery+registrationDateQuery
-
-    const response = await axios.get('https://localhost:3000/devices?limit=10&page='+page+'&'+queryParams);
-    
-    responseData.value =response.data._data.devices
-    responseDataPage.value=parseInt(response.data._page.page)
-    responseDataLimit.value=parseInt(response.data._page.limit)
-    responseDataTotalElements.value= response.data._page.totalElements
-  } catch (error) {
-    console.error('Error al obtener los datos:', error);
-  }
-};*/
 
 const toggleModal = (isEditing = false, uuid = '', device = null) => {
   isModalOpen.value = !isModalOpen.value;
@@ -202,13 +198,18 @@ onMounted(() => {
             <option value="inactive">Inactive</option>
           </select>
       </div>
-      <div >
-        <button class="device-button" @click="deviceStore.fetchDevices(1)">
-          Filter
-        </button>
+      <div > 
         <button class="device-button" @click="toggleModal(false, '', null)">
-                Add
-              </button>
+          <v-icon name="ri-add-line" scale="0.8" style="color: white;" @click="toggleModal(true, device.uuid, device)" />  Add
+        </button>
+        <button class="device-button" 
+          @click="deviceStore.fetchDevices(1, nameFilter, typeFilter, brandFilter, modelFilter, registrationDateFilter,statusFilter)"
+          >
+          <v-icon name="pr-filter" scale="0.8" @click="toggleModal(true, device.uuid, device)" />Filter
+        </button> 
+        <button class="device-button" @click="cleanFilters()">
+          <v-icon name="pr-filter-slash" scale="0.8" @click="toggleModal(true, device.uuid, device)" /> Clean
+        </button>
       </div>
     </div>
     
@@ -216,8 +217,8 @@ onMounted(() => {
   <table>
     <thead>
       <tr>
-        <th class="uuid">Uuid</th>
-        <th class="name">Name</th>
+        <th class="uuid">Uuid  </th>
+        <th class="name">Name<v-icon name="fa-caret-down" /></th>
         <th class="type">Type</th>
         <th class="brand">Brand</th>
         <th class="model">Model</th>
@@ -243,13 +244,21 @@ onMounted(() => {
     </tbody>
   </table>
   <div class="data-base-navigator">
-    <button class="device-button" @click="deviceStore.fetchDevices(deviceStore.currentPage>1?deviceStore.currentPage-1:deviceStore.currentPage)">
+    <button class="pagination-button" @click="deviceStore.fetchDevices(deviceStore.currentPage>1?deviceStore.currentPage-1:deviceStore.currentPage,statusFilter.value,registrationDateFilter.value,modelFilter.value,brandFilter.value,typeFilter.value,nameFilter.value)">
       < Prev
     </button>
     <span class="pagination-text">  Page:  {{deviceStore.currentPage}}  </span> 
-    <button class="device-button" 
-      @click="deviceStore.fetchDevices(deviceStore.limit/deviceStore.totalElements>deviceStore.currentPage-1 && deviceStore.totalElements>deviceStore.limit ?deviceStore.currentPage+1:deviceStore.currentPage)"> 
-      Next >
+    <button class="pagination-button" 
+      @click="deviceStore.fetchDevices(
+        deviceStore.currentPage < Math.ceil(deviceStore.totalElements / deviceStore.limit) ? deviceStore.currentPage + 1 : deviceStore.currentPage,
+        statusFilter.value,
+        registrationDateFilter.value,
+        modelFilter.value,
+        brandFilter.value,
+        typeFilter.value,
+        nameFilter.value)"
+      > 
+        Next >
     </button>
   </div>
 </template>
@@ -295,11 +304,30 @@ onMounted(() => {
     display: inline-block;
     font-size: 12px;
     margin: 1px 0.5px;
+    margin-top: 15px;
     cursor: pointer;
     border-radius: 8px;
   }
 
   .device-button:hover {
+    background-color: #009688;
+  }
+
+  .pagination-button {
+    background-color: #26a69a; 
+    border: none;
+    color: white;
+    padding: 7px 14px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    margin: 1px 0.5px;
+    cursor: pointer;
+    border-radius: 8px;
+  }
+
+  .pagination-button:hover {
     background-color: #009688;
   }
 
@@ -383,6 +411,11 @@ table tr:nth-child(even) {
     font-size: 16px;
     font-weight: bold;
   }
+
+input {
+ max-width: 140px;
+ 
+}
 
   input[type="text"],
   input[type="date"],

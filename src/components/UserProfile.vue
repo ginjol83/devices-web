@@ -1,8 +1,9 @@
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { OhVueIcon, addIcons } from 'oh-vue-icons';
 import { IoPersonCircle } from 'oh-vue-icons/icons';
-import { useUserStore } from '../states/userStore.js'; // Asegúrate de que la ruta al store sea la correcta
+import { useUserStore } from '../states/userStore.js'; 
+import Cookies from 'js-cookie';
 
 // Añadir iconos
 addIcons(IoPersonCircle);
@@ -24,6 +25,15 @@ watch(user, (newUser) => {
   userRole.value = newUser.role;
   userBio.value = newUser.bio;
 }, { immediate: true });
+
+onMounted(() => {
+  const userUuid = Cookies.get('useruuid');
+  
+  if (userUuid) {
+    const us = userStore.fetchUserByUuid(userUuid)
+    console.log(us)
+  } 
+});
 </script>
 
 <template>
