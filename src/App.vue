@@ -2,7 +2,7 @@
   import { OhVueIcon, addIcons } from 'oh-vue-icons'
   import { RouterLink } from 'vue-router';
 
-  import { FaDesktop, CoAboutMe, FaUserCircle, RiLogoutCircleLine   } from 'oh-vue-icons/icons'
+  import { FaDesktop, CoAboutMe, FaUserCircle, RiLogoutCircleLine,FaUsers    } from 'oh-vue-icons/icons'
   import LoginModal from './components/LoginModal.vue';
   import { useUserStore } from './states/userStore'; // Asegúrate de que la ruta al store sea la correcta
   import { ref, computed, onMounted } from 'vue';
@@ -10,7 +10,7 @@
 
   const show = ref(true);
   // Add Icons
-  addIcons(FaDesktop, CoAboutMe, FaUserCircle, RiLogoutCircleLine);
+  addIcons(FaDesktop, CoAboutMe, FaUserCircle, RiLogoutCircleLine, FaUsers );
   const userStore = useUserStore();  
   const user = computed(() => userStore.getUser);
   
@@ -44,12 +44,13 @@
       <div>
         <span style="margin: 0; color: white;"> User: {{ user.username }} </span>
         <RouterLink to="user-profile"><v-icon name="fa-user-circle" scale="2.6" style="color: #FFFFFF;"/></RouterLink>
-        <button><v-icon name="ri-logout-circle-line" scale="2.4" style="color: #FFFFFF;" 
+        <button style="background-color: black; color: #FFFFFF;"><v-icon name="ri-logout-circle-line" scale="2.4"  
           @click="logout()" /></button>
       </div>
     </header>
     <nav>
       <RouterLink to="/"><h3><v-icon name="fa-desktop" /> Devices</h3></RouterLink>
+      <RouterLink to="/user-manager"><h3><v-icon name="fa-users" /> Users</h3></RouterLink>
       <RouterLink to="/about"><h3><v-icon name="co-about-me" /> About</h3></RouterLink>
     </nav>
     <RouterView />
@@ -66,7 +67,8 @@ header {
   left: 0; 
   z-index: 1000; 
   
-  background-color: #26a69a;
+  /*background-color: #26a69a;*/
+  background-color: #000000;
 
   display: flex; 
   justify-content: space-between; 

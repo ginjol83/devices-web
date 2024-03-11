@@ -2,7 +2,6 @@
 import { OhVueIcon, addIcons } from 'oh-vue-icons'
 import { BiMusicPlayer,PrFilterSlash ,RiAddLine,FaCaretDown, PrFilter, IoAddOutline,  FaRegularTrashAlt , FcGlobe, OiRepoPull, FaRegularEdit, RiDeleteBin5Line, MdFibernewTwotone } from 'oh-vue-icons/icons'
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
 import { useDeviceStore } from '../states/deviceStore.js'; // Asegúrate de que la ruta al store sea la correcta
 
 const deviceStore = useDeviceStore();

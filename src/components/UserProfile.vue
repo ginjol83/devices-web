@@ -18,6 +18,9 @@ const userEmail = ref('');
 const userRole = ref('');
 const userBio = ref('');
 
+const updateSuccess = ref(false); 
+
+
 // Observar cambios en el objeto de usuario
 watch(user, (newUser) => {
   userName.value = newUser.username;
@@ -25,6 +28,26 @@ watch(user, (newUser) => {
   userRole.value = newUser.role;
   userBio.value = newUser.bio;
 }, { immediate: true });
+
+const modifyUser = () => {
+  const userUuid = Cookies.get('useruuid');
+  const formData = {
+    username: userName.value,
+    email: userEmail.value,
+    role: userRole.value,
+    bio: userBio.value
+  };
+  // Suponemos que modifyUser devuelve una promesa
+  userStore.modifyUser(userUuid, formData, 1).then(() => {
+    updateSuccess.value = true; // Mostrar mensaje de éxito
+    setTimeout(() => {
+      updateSuccess.value = false; // Ocultar mensaje después de 5 segundos
+    }, 3000);
+    console.log("Usuario modificado con éxito");
+  }).catch(error => {
+    console.error("Error al modificar el usuario", error);
+  });
+}
 
 onMounted(() => {
   const userUuid = Cookies.get('useruuid');
@@ -38,6 +61,7 @@ onMounted(() => {
 
 <template>
     <div class="user-profile">
+      <p v-if="updateSuccess" style="color: green;">Usuario actualizado con éxito!</p>
         <div class="avatar">
             <v-icon name="io-person-circle" scale="3" />
             <!--img :src="user.avatar" alt="User Avatar" /-->
@@ -58,7 +82,12 @@ onMounted(() => {
           <label for="bio">Bio:</label>
           <textarea id="bio" v-model="userBio"></textarea>
         </div>
-         <button type="submit" class="submit-btn">Save Changes</button>
+         <button type="submit" class="submit-btn" 
+          @click="modifyUser()">
+            Save Changes
+          </button>
+          
+
     </div>
    
   </template>
