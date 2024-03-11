@@ -218,7 +218,6 @@ onMounted(() => {
       </tbody>
     </table>
     <div class="data-base-navigator">
-      {{ userStore.currentPage  }}
   <button class="pagination-button" @click="userStore.fetchUsers(userStore.currentPage > 1 ? userStore.currentPage - 1 : userStore.currentPage, uuidFilter.value, nameFilter.value, usernameFilter.value, emailFilter.value, roleFilter.value, registrationDateFilter.value)">
     < Prev
   </button>

@@ -64,7 +64,6 @@ onMounted(() => {
       <p v-if="updateSuccess" style="color: green;">Usuario actualizado con éxito!</p>
         <div class="avatar">
             <v-icon name="io-person-circle" scale="3" />
-            <!--img :src="user.avatar" alt="User Avatar" /-->
         </div >
         <div class="form-group">
           <label for="name">Name:</label>
@@ -151,10 +150,7 @@ textarea {
     border-radius: 8px;
 }
 
-
-
 .submit-btn:hover {
   background-color: #009688;
 }
 </style>
-  

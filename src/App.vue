@@ -66,21 +66,13 @@ header {
   top: 0; 
   left: 0; 
   z-index: 1000; 
-  
-  /*background-color: #26a69a;*/
   background-color: #000000;
-
-  display: flex; 
+  display: flex;
   justify-content: space-between; 
   align-items: center; 
   height: 60px; 
   padding: 0 20px;
 } 
-
-/*h1{
-  margin-left: 10%;
-  padding-top: 5px;
-}*/
 
 nav {
   position: fixed;
@@ -89,7 +81,6 @@ nav {
   top: 0vh; 
   width: 8%;
   height: 100vh; 
-  /*background-color: #333; */
   background-image: linear-gradient(to bottom, #26a69a, #ffffff);
   color: white; 
   z-index: 500; 
