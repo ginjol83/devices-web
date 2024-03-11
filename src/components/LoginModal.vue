@@ -49,9 +49,7 @@ const login = async () => {
       </div>
     </div>
   </template>
-  
-  
-  
+
   <style>
   .modal-backdrop {
     position: fixed;
